@@ -1,5 +1,3 @@
-<div #fullpageContainer class="fullpage-container">
-    <div class="section" *ngFor="let section of sections">
-        <ng-content></ng-content>
-    </div>
+<div #section class="section flex flex-col w-screen h-full">
+    <ng-content></ng-content>
 </div>

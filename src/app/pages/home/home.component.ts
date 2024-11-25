@@ -5,6 +5,11 @@ import { NgOptimizedImage } from '@angular/common';
 
 import { DetailSectionComponent } from '../../widgets/detail-section/detail-section.component';
 
+//Features
+
+import { FullpageScrollComponent } from '../../features/fullpage-scroll/fullpage-scroll.component';
+
+
 
 // Shared
 
@@ -13,7 +18,7 @@ import { ListComponent } from '../../shared/list/list.component';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [DetailSectionComponent, ListComponent, NgOptimizedImage],
+  imports: [DetailSectionComponent, ListComponent, FullpageScrollComponent, NgOptimizedImage],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
