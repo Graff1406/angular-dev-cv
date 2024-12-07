@@ -1,35 +1,47 @@
-<section [class]="class"
-    class="flex flex-col-reverse md:flex-row items-center justify-center bg-gradient-to-r min-h-screen">
-    <div class="flex-1 w-full h-full">
-        <div
-            class="flex flex-col items-center md:items-start md:justify-center space-y-4 md:space-y-7 h-full p-6 md:p-20">
-            <ng-content select="header">
-                <h2 class="text-3xl md:text-5xl font-bold gradient-text">{{title}}</h2>
-            </ng-content>
+<section
+  [class]="class"
+  class="flex flex-col-reverse md:flex-row items-center justify-center bg-gradient-to-r min-h-screen"
+>
+  <div class="flex-1 w-full h-full">
+    <div
+      class="flex flex-col items-center md:items-start md:justify-center space-y-4 md:space-y-7 h-full p-6 md:p-20"
+    >
+      <ng-content select="header">
+        <h2 class="text-3xl md:text-5xl font-bold gradient-text">
+          {{ title }}
+        </h2>
+      </ng-content>
 
-            <ng-content select="subheader">
-                <p class="text-xl md:text-2xl text-white">{{subheader}}</p>
-            </ng-content>
+      <ng-content select="subheader">
+        <p class="text-xl md:text-2xl text-white">{{ subheader }}</p>
+      </ng-content>
 
-            <div class="pl-6">
-                <ng-content select="[list]">
-                </ng-content>
-            </div>
+      <div class="pl-6">
+        <ng-content select="[list]"> </ng-content>
+      </div>
 
-            <div class="flex pt-4">
-                <button class="btn-custom-gradient text-white py-3 px-5 rounded-full shadow-md tracking-wider">
-                    <a href="#">Demo Version</a>
-                </button>
-                <button class="btn-custom-gradient-2 text-white py-3 px-5 rounded-full ml-4 shadow-md tracking-wider">
-                    <a href="#">Github</a>
-                </button>
-            </div>
-        </div>
+      <div class="flex pt-4">
+        @if(!hideDemoBtn) {
+        <button
+          class="btn-custom-gradient text-white py-3 px-5 rounded-full shadow-md tracking-wider"
+        >
+          <a href="#">Demo Version</a>
+        </button>
+        }
+
+        <button
+          class="btn-custom-gradient-2 text-white py-3 px-5 rounded-full ml-4 shadow-md tracking-wider"
+        >
+          <a href="#">Github</a>
+        </button>
+      </div>
     </div>
-    <div class="flex-1 w-full h-full">
-        <div class="flex flex-col md:justify-center items-center h-full p-0 md:p-20">
-            <ng-content select="[content-image]">
-            </ng-content>
-        </div>
+  </div>
+  <div class="flex-1 w-full h-full">
+    <div
+      class="flex flex-col md:justify-center items-center h-full p-0 md:p-20"
+    >
+      <ng-content select="[content-image]"> </ng-content>
     </div>
+  </div>
 </section>

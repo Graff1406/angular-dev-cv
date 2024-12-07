@@ -12,4 +12,5 @@ export class DetailSectionComponent {
   @Input() class = 'bg-custom-gradient'; // Default classes
   @Input() title = 'Section'
   @Input() subheader: string | undefined;
+  @Input() hideDemoBtn: boolean = false;
 }

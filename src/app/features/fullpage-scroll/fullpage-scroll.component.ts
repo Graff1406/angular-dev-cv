@@ -1,5 +1,5 @@
-import { Component, AfterViewInit, OnDestroy, ViewChildren, QueryList, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-fullpage-scroll',
@@ -8,75 +8,81 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
   styleUrls: ['./fullpage-scroll.component.css'],
   imports: [CommonModule]
 })
-export class FullpageScrollComponent implements AfterViewInit, OnDestroy {
-  @ViewChildren('section') sections!: QueryList<ElementRef>;
-  private currentSectionIndex = 0;
+export class FullPageScrollComponent {
   private isScrolling = false;
-  private isBrowser: boolean;
-  private windowHeight = 0;
+  private isWindow = typeof window !== 'undefined';
+  private screenHeight = this.isWindow ? window.innerHeight : 0;
+  private startTouchY = 0;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
-    this.isBrowser = isPlatformBrowser(this.platformId);
-  }
+  @HostListener('window:wheel', ['$event'])
+  async onWheel(event: WheelEvent): Promise<void> {
+    if (this.isWindow) {
+      if (this.isScrolling) return;
 
-  ngAfterViewInit(): void {
-    if (this.isBrowser) {
-      this.windowHeight = window.innerHeight; // Определяем высоту экрана
-      window.addEventListener('resize', this.onResize);
-      document.addEventListener('wheel', this.onWheel);
-    }
-  }
+      this.isScrolling = true;
+      const currentScroll = window.scrollY;
+      const nextScroll = event.deltaY > 0
+        ? currentScroll + this.screenHeight
+        : currentScroll - this.screenHeight;
 
-  ngOnDestroy(): void {
-    if (this.isBrowser) {
-      document.removeEventListener('wheel', this.onWheel);
-      window.removeEventListener('resize', this.onResize);
-    }
-  }
-
-  onResize = (): void => {
-    this.windowHeight = window.innerHeight;
-  }
-
-  onWheel = (event: WheelEvent): void => {
-    console.log(1111)
-    if (this.isScrolling) {
-      return;
-    }
-
-    this.isScrolling = true;
-
-    if (event.deltaY > 0) {
-      this.scrollToNextSection();
-    } else {
-      this.scrollToPreviousSection();
-    }
-  }
-
-  scrollToNextSection(): void {
-    if (this.currentSectionIndex < this.sections.length - 1) {
-      this.currentSectionIndex++;
-      this.scrollToCurrentSection();
-    } else {
+      console.log('🚀 ~ nextScroll:', nextScroll);
+      await this.smoothScrollTo(Math.abs(nextScroll));
       this.isScrolling = false;
     }
   }
 
-  scrollToPreviousSection(): void {
-    if (this.currentSectionIndex > 0) {
-      this.currentSectionIndex--;
-      this.scrollToCurrentSection();
-    } else {
+  @HostListener('touchstart', ['$event'])
+  onTouchStart(event: TouchEvent): void {
+    this.startTouchY = event.touches[0].clientY;
+  }
+
+  @HostListener('touchmove', ['$event'])
+  async onTouchMove(event: TouchEvent): Promise<void> {
+    if (this.isScrolling) return;
+    const touchMoveY = event.touches[0].clientY;
+    const deltaY = this.startTouchY - touchMoveY;
+
+    if (Math.abs(deltaY) > 30) {
+      this.isScrolling = true;
+      const currentScroll = window.scrollY;
+      const nextScroll = deltaY > 0
+        ? currentScroll + this.screenHeight
+        : currentScroll - this.screenHeight;
+
+      console.log('🚀 ~ nextScroll:', nextScroll);
+      await this.smoothScrollTo(Math.abs(nextScroll));
       this.isScrolling = false;
     }
   }
 
-  scrollToCurrentSection(): void {
-    const section = this.sections.toArray()[this.currentSectionIndex];
-    window.scrollTo({ top: this.currentSectionIndex * this.windowHeight, behavior: 'smooth' });
+  private smoothScrollTo(targetPosition: number): Promise<void> {
+    return new Promise((resolve) => {
+      window.scrollTo({
+        top: Math.ceil(targetPosition),
+        behavior: 'smooth',
+      });
+      console.log('🚀 ~ HomeComponent ~ return new Promise ~ targetPosition:', targetPosition);
 
-    setTimeout(() => {
-      this.isScrolling = false;
-    }, 1000); // Продолжительность анимации прокрутки
+      const checkIfDone = () => {
+        const currentScroll = window.scrollY;
+        const difference = Math.abs(currentScroll - targetPosition);
+
+        if (difference < 2) {
+          resolve();
+        } else {
+          requestAnimationFrame(checkIfDone);
+        }
+      };
+
+      checkIfDone();
+    });
+  }
+
+  ngOnInit(): void {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({
+        top: 0,
+      });
+    }
   }
 }
